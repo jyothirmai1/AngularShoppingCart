@@ -1,0 +1,62 @@
+import { inject } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { MyStorage } from '../../../shared/services/storage';
+import { cartActions } from './cart-actions';
+import { map, tap, withLatestFrom } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { cartFeature } from './cart-features';
+import { NgToastService } from 'ng-angular-popup';
+
+const CART_STORAGE_KEY = 'store_cart';
+export const loadCartEffect = createEffect(
+  (actions$ = inject(Actions), storage = inject(MyStorage)) => {
+    return actions$.pipe(
+      ofType(cartActions.load),
+      map(() => {
+        const cartData = storage.getItem(CART_STORAGE_KEY);
+        const items = cartData ? JSON.parse(cartData) : [];
+        return cartActions.loadSuccess({ items });
+      })
+    );
+  },
+  {
+    functional: true,
+  }
+);
+
+export const addToCartEffect = createEffect(
+  (actions$ = inject(Actions), toast = inject(NgToastService)) => {
+    return actions$.pipe(
+      ofType(cartActions.addToCart),
+      map(({ product }) => {
+        console.log('Adding to cart:', product);
+        toast.info('Product added to cart', 'INFO');
+        return cartActions.addToCartSuccess({ product });
+      })
+    );
+  },
+  {
+    functional: true,
+  }
+);
+
+export const persistCartEffect = createEffect(
+  (actions$ = inject(Actions), storage = inject(MyStorage), store = inject(Store)) => {
+    return actions$.pipe(
+      ofType(
+        cartActions.addToCartSuccess,
+        cartActions.removeFromCart,
+        cartActions.updateQuantity,
+        cartActions.clearCart
+      ),
+      withLatestFrom(store.select(cartFeature.selectItems)),
+      tap(([, items]) => {
+        storage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      })
+    );
+  },
+  {
+    functional: true,
+    dispatch: false,
+  }
+);
