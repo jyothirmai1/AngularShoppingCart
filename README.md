@@ -52,8 +52,19 @@ For end-to-end (e2e) testing, run:
 ng e2e
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Install and configure tailwindcss
 
-## Additional Resources
+## Create login,register pages with signal based forms
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Install and set Ngrx store for auth,products,cart and profile pages
+
+## use ng angular popup for the toaster notifications
+
+
+
+
+
+
+
+
+
